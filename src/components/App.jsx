@@ -4,6 +4,8 @@ import { Product } from './Product/Product';
 import { productsData } from 'Data/productsData';
 import css from './App.module.css';
 import Section from './Section/Section';
+import ProductForm from './ProductForm/ProductForm';
+import { nanoid } from 'nanoid';
 
 export class App extends Component {
   state = {
@@ -11,24 +13,26 @@ export class App extends Component {
     products: productsData,
   };
 
-  handleIncrement = () => {
-    // this.setState(state => {
-    //   return {
-    //     counterValue: state.counterValue + 1,
-    //   };
-    // });
-
-    this.setState({ counterValue: this.state.counterValue + 1 });
-  };
-
-  handleDecrement = () => {
-    if (this.state.counterValue === 0) {
-      return alert('Counter = 0');
+  handleAddProduct = productData => {
+    // console.log('productData', productData);
+    const hasDuplicates = this.state.products.some(
+      product => product.title === productData.title
+    );
+    if (hasDuplicates) {
+      return alert(
+        `Oops, product with title '${productData.title}' already exist!`
+      );
     }
 
-    this.setState({ counterValue: this.state.counterValue - 1 });
-  };
+    const finalProduct = {
+      ...productData,
+      id: nanoid(),
+    };
 
+    this.setState({
+      products: [...this.state.products, productData, finalProduct],
+    });
+  };
   hendleDeleteProduct = productId => {
     console.log('productId:', productId);
     this.setState({
@@ -44,13 +48,9 @@ export class App extends Component {
       <div>
         <Section>
           <TitleComponent />
-          <TitleComponent />
-          <button onClick={this.handleDecrement}>Decrement - </button>
-          <b> counterValue: {this.state.counterValue} </b>
-          <button onClick={this.handleIncrement}> Increment +</button>
-          {this.state.counterValue >= 5 && (
-            <div>Congrats! You won the discount 20% OFF - #R3DW1E3</div>
-          )}
+        </Section>
+        <Section>
+          <ProductForm handleAddProduct={this.handleAddProduct} />
         </Section>
 
         <Section title="Product List">
